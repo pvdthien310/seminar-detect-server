@@ -13,9 +13,6 @@ from flask import jsonify
 tsr.pytesseract.tesseract_cmd ='C:\\Program Files\\Tesseract-OCR\\tesseract.exe'
 
 def Detect(base64_string):
-    # original_file_path = 'TEST5.png'
-    # img = cv.imread(original_file_path, cv.IMREAD_UNCHANGED)
-    # img = cv.cvtColor(img, cv.COLOR_BGR2RGB)  
     original_file_path = "Result"
     im_bytes = base64.b64decode(base64_string)
     im_arr = np.frombuffer(im_bytes, dtype=np.uint8)  # im_arr is one-dim Numpy array
@@ -67,17 +64,15 @@ def Detect(base64_string):
     os.mkdir(original_file_path)
 
     small_img = []
-    # cv.imwrite('./ori.png', img)
 
     for i in split_index:
         print(i)
-        crop_img = img[i[5] - 5 : i[5] + i[4] + 5, i[0] - 5: i[2] + i[3] + 5 ]
+        crop_img = img[i[5] - 40 : i[5] + i[4] + 40, i[0] - 35: i[2] + i[3] + 35 ]
         small_img.append(crop_img)
         cropped_file_path = './{original_img_path}/crop_{index}.png'.format(original_img_path = original_file_path, index = str(i[6])+'_' + str(i[7]))
         print(cropped_file_path)
         cv.imwrite(cropped_file_path, crop_img)
- 
-    result = []
+        
     rs_str = ''
 
     config = Cfg.load_config_from_file('config_4.yml')
@@ -92,15 +87,8 @@ def Detect(base64_string):
         print('-------------------' + img)
         img = Image.open(img)
         # result.append(detector.predict(img))
-        rs_str = rs_str + detector.predict(img) + '\n'
+        rs_str = rs_str + detector.predict(img) + " "
         print('-------------------' + 'Done')
-
-    # for child_img in small_img:
-    #     print('-------------------')
-    #     rs_str = rs_str + detector.predict(child_img) + '\n'
-    #     child_img = cv.cvtColor(child_img, cv.COLOR_BGR2RGB)
-    #     rs_str = rs_str + detector.predict(child_img) + '\n'
-    #     print('-------------------' + 'Done')
 
     f= open("rs.txt","w", encoding="utf-8")
     f.write(rs_str)
